@@ -6,8 +6,8 @@
 #include <std_msgs/Float64MultiArray.h>
 
 const double R = 0.0375;
-const double L1 = 0.268;
-const double L2 = 0.160;
+const double L1 = 0.258;
+const double L2 = 0.205;
 
 double A = 0.0;
 double X = 0.0;
@@ -67,8 +67,27 @@ int main(int argc, char** argv){
   ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
   ros::Subscriber sub = n.subscribe("velocity_data", 1000, cbMessage);
   
-  tf::TransformBroadcaster broadcaster;
+  geometry_msgs::TransformStamped odom_trans;
   geometry_msgs::TransformStamped lidar_trans;
+  tf::TransformBroadcaster broadcaster;
+
+  nav_msgs::Odometry odom;
+  odom.child_frame_id = "base_footprint";
+  odom.header.frame_id = "odom";
+  odom.pose.pose.position.z = 0.0;
+  odom_trans.transform.translation.z = 0.0;
+  odom_trans.header.frame_id = "odom";
+  odom_trans.child_frame_id = "base_footprint";
+  
+  lidar_trans.header.frame_id = "base_footprint";
+  lidar_trans.child_frame_id = "base_scan";
+  
+
+  lidar_trans.transform.translation.x = -0.14;
+  lidar_trans.transform.translation.y = 0;
+  lidar_trans.transform.translation.z = 0.12;
+  geometry_msgs::Quaternion lidar_quat = tf::createQuaternionMsgFromYaw(0);
+  lidar_trans.transform.rotation = lidar_quat;
 
   ROS_INFO("Odometry init.");
   ros::Rate r(10);
@@ -78,43 +97,31 @@ int main(int argc, char** argv){
     ros::Time current_time;
     current_time = ros::Time::now();
 
-    nav_msgs::Odometry odom;
     odom.header.stamp = current_time;
-    odom.header.frame_id = "odom";
+    
     geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(A);
 
     odom.pose.pose.position.x = X;
     odom.pose.pose.position.y = Y;
-    odom.pose.pose.position.z = 0.0;
+    
     odom.pose.pose.orientation = odom_quat;
 
-    odom.child_frame_id = "base_footprint";
+    
     odom.twist.twist.linear.x = VX;
     odom.twist.twist.linear.y = VY;
     odom.twist.twist.angular.z = VW;
 
     odom_pub.publish(odom);
-
-    geometry_msgs::TransformStamped odom_trans;
+    
     odom_trans.header.stamp = current_time;
-    odom_trans.header.frame_id = "odom";
-    odom_trans.child_frame_id = "base_footprint";
+
 
     odom_trans.transform.translation.x = VX;
     odom_trans.transform.translation.y = VY;
-    odom_trans.transform.translation.z = 0.0;
-    odom_trans.transform.rotation = odom_quat;
-
     
-    lidar_trans.header.stamp = current_time;
-    lidar_trans.header.frame_id = "base_footprint";
-    lidar_trans.child_frame_id = "base_scan";
+    odom_trans.transform.rotation = odom_quat; 
 
-    lidar_trans.transform.translation.x = -0.14;
-    lidar_trans.transform.translation.y = 0;
-    lidar_trans.transform.translation.z = 0.12;
-    geometry_msgs::Quaternion lidar_quat = tf::createQuaternionMsgFromYaw(0);
-    lidar_trans.transform.rotation = lidar_quat;
+    lidar_trans.header.stamp = current_time;
 
     broadcaster.sendTransform(lidar_trans);
     broadcaster.sendTransform(odom_trans);

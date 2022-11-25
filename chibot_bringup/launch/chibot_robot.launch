@@ -10,6 +10,4 @@
   </include>
    <include file="$(find chibot_bringup)/launch/chibot_odom.launch">
   </include>
-    <include file="$(find chibot_bringup)/launch/chibot_connect.launch">
-  </include>
 </launch>
