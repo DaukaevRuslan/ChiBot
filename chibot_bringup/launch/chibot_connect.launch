@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="chibot_bringup" type="chibot_bringup_conn" name="chibot_bringup_conn"  output="screen">
+  </node>
+</launch>

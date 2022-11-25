@@ -1,0 +1,24 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="map_file" default="$(find chibot_navigation)/maps/maphome.yaml"/>
+  <arg name="open_rviz" default="false"/>
+  <arg name="move_forward_only" default="false"/>
+
+  
+  <!-- Map server -->
+  
+
+  <!-- AMCL -->
+  <include file="$(find chibot_navigation)/launch/amcl.launch"/>
+
+  <!-- move_base -->
+  <include file="$(find chibot_navigation)/launch/move_base.launch">
+    <arg name="move_forward_only" value="$(arg move_forward_only)"/>
+  </include>
+
+  <!-- rviz -->
+  <group if="$(arg open_rviz)"> 
+    <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find chibot_navigation)/rviz/chibot_navigation.rviz"/>
+  </group>
+</launch>
