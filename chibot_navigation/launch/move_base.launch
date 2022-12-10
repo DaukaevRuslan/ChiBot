@@ -7,6 +7,7 @@
   <!-- move_base -->
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+    <!-- rosparam file="$(find chibot_navigation)/param//teb_local_planner_params.yaml" command="load" -->
     <rosparam file="$(find chibot_navigation)/param/costmap_common_params_chibot.yaml" command="load" ns="global_costmap" />
     <rosparam file="$(find chibot_navigation)/param/costmap_common_params_chibot.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find chibot_navigation)/param/local_costmap_params.yaml" command="load" />
@@ -18,3 +19,7 @@
     <param name="DWAPlannerROS/min_vel_x" value="0.0" if="$(arg move_forward_only)" />
   </node>
 </launch>
+
+
+<!-- param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" -->
+<!-- param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" -->
